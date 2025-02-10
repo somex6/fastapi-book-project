@@ -24,12 +24,6 @@ jobs:
       
       - name: Run Tests
         run: |
-          pytest --junitxml=reports/code-test-results.xml --cov=gregor-lib
+          cd tests
+          pytest -v
         continue-on-error: false
-      
-      - name: Upload Test Results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: reports/code-test-results.xml
