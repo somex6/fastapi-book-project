@@ -1,0 +1,23 @@
+name: Run Pytest
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Deploy Application
+        run: |
+          docker build -t fast-api-app .
+          docker tag fast-api-app:latest somex6/fast-api-app:latest
+          docker push somex6/fast-api-app:latest
+
