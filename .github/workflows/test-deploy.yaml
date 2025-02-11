@@ -27,3 +27,15 @@ jobs:
           cd tests
           pytest -v
         continue-on-error: false
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Deploy Application
+        run: |
+          docker build -t fast-api-app .
+          docker tag fast-api-app:latest somex6/fast-api-app:latest
+          docker push somex6/fast-api-app:latest
