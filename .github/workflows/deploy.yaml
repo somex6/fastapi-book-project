@@ -34,8 +34,9 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            rm -rf fastapi-book-project/
+            git clone https://github.com/somex6/fastapi-book-project.git
             cd fastapi-book-project
-            git pull
             docker stop fastapi-app-v1
             docker rm fastapi-app-v1
             docker build -t fastapi-app . && docker run -d --name fastapi-app-v1 -p 8000:8000 fastapi-app
