@@ -36,5 +36,6 @@ jobs:
           script: |
             cd fastapi-book-project
             git pull
-            docker stop fastapi-app
+            docker stop fastapi-app-v1
+            docker rm fastapi-api-v1
             docker build -t fastapi-app . && docker run -d --name fastapi-app-v1 -p 8000:8000 fastapi-app
