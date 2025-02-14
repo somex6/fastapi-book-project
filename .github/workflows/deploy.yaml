@@ -1,9 +1,7 @@
-name: Deploy App
+name: Deploy App To Server
 
 on:
-  pull_request:
-    types:
-      - closed
+  push:
     branches:
       - main
 
@@ -16,17 +14,26 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Login to DockerHub Registry
-        run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+      # - name: Login to DockerHub Registry
+      #   run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
-      - name: Deploy Application
-        run: |
-          docker build -t $APP_NAME .
-          docker tag $APP_NAME:$TAGS $DOCKERHUB_REGISTRY:$TAGS
-          docker push $DOCKERHUB_REGISTRY:$TAGS
+      # - name: Deploy Application
+      #   run: |
+      #     docker build -t $APP_NAME .
+      #     docker tag $APP_NAME:$TAGS $DOCKERHUB_REGISTRY:$TAGS
+      #     docker push $DOCKERHUB_REGISTRY:$TAGS
 
+      - name: Deploy to App To Server via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd fastapi-book-project
+            git pull
+            docker build -t fastapi-app . && docker run -p 8000:8000 fastapi-app
